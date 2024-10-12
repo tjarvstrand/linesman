@@ -1,0 +1,21 @@
+name: linesman_lint
+description: Don't cross the line
+version: 0.1.0
+
+environment:
+  sdk: ^3.7.0
+
+resolution: workspace
+
+# Add regular dependencies here.
+dependencies:
+  analyzer:
+  custom_lint: ^0.7.5
+  custom_lint_builder: ^0.7.5
+  linesman: 0.1.0
+  path: ^1.9.1
+
+dev_dependencies:
+  lints: ^5.1.1
+  strict: ^2.1.0
+  test: ^1.24.0

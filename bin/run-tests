@@ -1,0 +1,16 @@
+#! /usr/bin/env bash
+
+set -e
+
+export THIS_DIR=$(cd $(dirname "${BASH_SOURCE[$((${#BASH_SOURCE[@]} - 1))]}"); pwd)
+
+PACKAGES_DIR="${THIS_DIR}/../packages"
+
+cd "$PACKAGES_DIR/linesman"
+dart test
+
+cd "$PACKAGES_DIR/linesman_lint"
+dart test
+
+cd "$PACKAGES_DIR/linesman_test"
+dart run custom_lint

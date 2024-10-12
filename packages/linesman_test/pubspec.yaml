@@ -1,0 +1,16 @@
+name: linesman_test
+description: Linesman tests
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.7.0
+
+dev_dependencies:
+  custom_lint:
+  linesman_lint:
+    path: ../linesman_lint
+
+dependency_overrides:
+  linesman:
+    path: ../linesman
