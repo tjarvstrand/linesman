@@ -1,6 +1,7 @@
 [![pub package](https://img.shields.io/pub/v/linesman.svg?label=linesman&color=blue)](https://pub.dev/packages/linesman)
 [![pub package](https://img.shields.io/pub/v/linesman_lint.svg?label=linesman_lint&color=blue)](https://pub.dev/packages/linesman_lint)
-![building](https://github.com/tjarvstrand/linesman/workflows/linesman/badge.svg)
+![main](https://github.com/tjarvstrand/linesman/actions/workflows/test.yaml/badge.svg?branch=main)
+
 
 # Linesman
 
