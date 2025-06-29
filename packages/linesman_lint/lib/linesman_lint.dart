@@ -5,13 +5,8 @@ import 'package:analyzer/error/error.dart' show ErrorSeverity;
 import 'package:analyzer/error/listener.dart';
 import 'package:custom_lint_builder/custom_lint_builder.dart';
 import 'package:linesman/linesman.dart';
-import 'package:path/path.dart' as p;
 
 PluginBase createPlugin() => _Linter();
-
-extension UriComponentPathExt on Uri {
-  String get componentPath => p.basename(p.relative(path, from: pathSegments[0]));
-}
 
 class _Linter extends PluginBase {
   @override
@@ -34,15 +29,16 @@ class LinesmanLint extends DartLintRule {
   @override
   Future<void> run(CustomLintResolver resolver, ErrorReporter reporter, CustomLintContext context) async {
     final unit = await resolver.getResolvedUnitResult();
-    final sourcePath = unit.uri.componentPath;
+    final sourcePackage = unit.uri.pathSegments[0];
+    final sourcePath = unit.uri.path;
 
     context.registry.addImportDirective((import) {
       final uri = import.libraryImport?.uri;
       if (uri is! DirectiveUriWithLibrary) {
         return;
       }
-      final targetPath = uri.source.uri.componentPath;
-      final (:allowed, :matchedRules) = check(_config, sourcePath, targetPath);
+      final targetPath = uri.source.uri.path;
+      final (:allowed, :matchedRules) = check(_config, sourcePackage, sourcePath, targetPath);
 
       if (_verbose || _config.verbose) {
         print('${allowed ? 'Allowed' : 'Disallowed'} import $targetPath:');

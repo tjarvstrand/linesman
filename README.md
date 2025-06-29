@@ -27,6 +27,9 @@ custom_lint:
         - type: deny
           source: test.dart
           target: some_other_file.dart
+        - type: deny
+          source: test.dart
+          target: package:some_package/some_other_file.dart
 ```
 
 ## Usage
@@ -38,11 +41,14 @@ There are two types of rules:
 - `allow`: Allows imports of files that match the target glob into files that match the source glob.
 - `deny`: Denies imports of files that match the target glob into files that match the source glob.
 
-The ordering of rules matters. Subsequent rules will override previous ones if they match the same
-source and target.
-
 Matching is performed using the [glob](https://pub.dev/packages/glob) package, which means you can
 use wildcards and other glob patterns to specify your source and target files.
+
+Globs can be specified with a `package:<package_name>/` prefix to match files in a specific package.
+If no such prefix is present, the glob will only match files in the current package.
+
+The ordering of rules matters. Subsequent rules will override previous ones if they match the same
+source and target.
 
 If no rules are defined, or if a particular rule is not defined, the default behavior is defined by
 the `allowByDefault` setting, which itself defaults to `true`.

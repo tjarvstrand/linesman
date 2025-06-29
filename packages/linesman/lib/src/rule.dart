@@ -3,9 +3,7 @@ import 'package:glob/glob.dart';
 
 abstract class Rule with EquatableMixin {
   Rule({required this.source, required this.target, required this.type, String? description})
-    : _source = Glob(source),
-      _target = Glob(target),
-      _description = description;
+    : _description = description;
 
   factory Rule.fromJson(Map<dynamic, dynamic> json) {
     String getValue(String key) {
@@ -33,23 +31,29 @@ abstract class Rule with EquatableMixin {
   String get description => _description ?? '$runtimeType: $source -> $target';
 
   final String source;
-  final Glob _source;
   final String target;
-  final Glob _target;
 
-  bool includesSource(String source) => _source.matches(source);
-  bool includesTarget(String source) => _target.matches(source);
+  static String _normalizePath(String path, String packageName) {
+    if (path.startsWith('package:')) {
+      return path.substring(8);
+    }
+    final relativePath = path.startsWith('/') ? path.substring(1) : path;
+    return '$packageName/$relativePath';
+  }
 
-  bool matches(String source, String target) => includesSource(source) && includesTarget(target);
+  bool matches(String sourcePackage, String source, String target) =>
+      Glob(_normalizePath(this.source, sourcePackage)).matches(source) &&
+      Glob(_normalizePath(this.target, sourcePackage)).matches(target);
 
-  bool? isAllowed(String source, String target);
+  bool? isAllowed(String sourcePackage, String source, String target);
 }
 
 class Allow extends Rule {
   Allow({required super.source, required super.target, super.description}) : super(type: 'allow');
 
   @override
-  bool? isAllowed(String source, String target) => matches(source, target) ? true : null;
+  bool? isAllowed(String sourcePackage, String source, String target) =>
+      matches(sourcePackage, source, target) ? true : null;
 
   @override
   List<Object?> get props => [source, target];
@@ -59,7 +63,8 @@ class Deny extends Rule {
   Deny({required super.source, required super.target, super.description}) : super(type: 'disallow');
 
   @override
-  bool? isAllowed(String source, String target) => matches(source, target) ? false : null;
+  bool? isAllowed(String sourcePackage, String source, String target) =>
+      matches(sourcePackage, source, target) ? false : null;
 
   @override
   List<Object?> get props => [source, target];
