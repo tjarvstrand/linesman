@@ -7,6 +7,9 @@ export THIS_DIR=$(cd $(dirname "${BASH_SOURCE[$((${#BASH_SOURCE[@]} - 1))]}"); p
 ROOT_DIR="$THIS_DIR/.."
 PACKAGES_DIR="$ROOT_DIR/packages"
 
+dart pub get
+(cd "$PACKAGES_DIR/linesman_lint/example"; dart pub get)
+
 (cd "$ROOT_DIR"; dart analyze --fatal-infos)
 
 (cd "$PACKAGES_DIR/linesman"; dart test)
