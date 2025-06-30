@@ -6,7 +6,7 @@
 # Linesman
 
 Linesman helps you enforce boundaries between different parts of your codebase by providing a way to
-define and validate valid imports between modules, components, or any other logical units in your
+define and validate imports between modules, components, or any other logical units in your
 Dart application.
 
 ## Install
@@ -47,11 +47,11 @@ use wildcards and other glob patterns to specify your source and target files.
 Globs can be specified with a `package:<package_name>/` prefix to match files in a specific package.
 If no such prefix is present, the glob will only match files in the current package.
 
-The ordering of rules matters. Subsequent rules will override previous ones if they match the same
+The ordering of rules matters. Subsequent rules will override previous ones that match the same
 source and target.
 
-If no rules are defined, or if a particular rule is not defined, the default behavior is defined by
-the `allowByDefault` setting, which itself defaults to `true`.
+If no rules are defined, or if a particular source is not matched by any rule, the default behavior
+is defined by the `allowByDefault` setting, which itself defaults to `true`.
 
 ## Contributing
 
