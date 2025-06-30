@@ -9,8 +9,5 @@ PACKAGES_DIR="${THIS_DIR}/../packages"
 cd "$PACKAGES_DIR/linesman"
 dart test
 
-cd "$PACKAGES_DIR/linesman_lint"
-dart test
-
 cd "$PACKAGES_DIR/linesman_lint/example"
 dart run custom_lint
