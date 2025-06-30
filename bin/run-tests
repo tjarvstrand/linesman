@@ -4,10 +4,11 @@ set -e
 
 export THIS_DIR=$(cd $(dirname "${BASH_SOURCE[$((${#BASH_SOURCE[@]} - 1))]}"); pwd)
 
-PACKAGES_DIR="${THIS_DIR}/../packages"
+ROOT_DIR="$THIS_DIR/.."
+PACKAGES_DIR="$ROOT_DIR/packages"
 
-cd "$PACKAGES_DIR/linesman"
-dart test
+(cd "$ROOT_DIR"; dart analyze --fatal-infos)
 
-cd "$PACKAGES_DIR/linesman_lint/example"
-dart run custom_lint
+(cd "$PACKAGES_DIR/linesman"; dart test)
+
+(cd "$PACKAGES_DIR/linesman_lint/example"; dart run custom_lint)
