@@ -1,5 +1,5 @@
-name: linesman_test
-description: Linesman tests
+name: linesman_lint_example
+description: Linesman lint example package
 version: 1.0.0
 publish_to: none
 
@@ -9,8 +9,8 @@ environment:
 dev_dependencies:
   custom_lint:
   linesman_lint:
-    path: ../linesman_lint
+    path: ..
 
 dependency_overrides:
   linesman:
-    path: ../linesman
+    path: ../../linesman

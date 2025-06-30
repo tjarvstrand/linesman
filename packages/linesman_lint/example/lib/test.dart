@@ -1,7 +1,7 @@
 // expect_lint: linesman_lint
-import 'package:linesman_test/import1.dart';
+import 'package:linesman_lint_example/import1.dart';
 // expect_lint: linesman_lint
-import 'package:linesman_test/import2.dart';
+import 'package:linesman_lint_example/import2.dart';
 
 // expect_lint: linesman_lint
 import 'import3.dart';

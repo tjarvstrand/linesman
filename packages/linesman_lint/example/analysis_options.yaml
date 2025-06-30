@@ -15,13 +15,13 @@ custom_lint:
           target: '*2.dart'
         - type: deny
           source: test.dart
-          target: package:linesman_test/import3.dart
+          target: package:linesman_lint_example/import3.dart
         - type: deny
           source: '**'
-          target: package:linesman_test/import4.dart
+          target: package:linesman_lint_example/import4.dart
         - type: deny
           source: '*.dart'
-          target: package:linesman_test/more_imports/*
+          target: package:linesman_lint_example/more_imports/*
         - type: deny
           source: '*.dart'
-          target: package:linesman_test/**/*.dart
+          target: package:linesman_lint_example/**/*.dart

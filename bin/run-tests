@@ -12,5 +12,5 @@ dart test
 cd "$PACKAGES_DIR/linesman_lint"
 dart test
 
-cd "$PACKAGES_DIR/linesman_test"
+cd "$PACKAGES_DIR/linesman_lint/example"
 dart run custom_lint
