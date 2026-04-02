@@ -21,13 +21,22 @@ plugins:
 ```yaml
 # linesman.yaml
 rules:
+  # Deny all files from importing internal code
   - type: deny
     source: "**"
     target: package:my_app/src/internal/**
+
+  # Except internal code can import other internal code
   - type: allow
     source: package:my_app/src/internal/**
     target: package:my_app/src/internal/**
-```
 
-This configuration denies all files from importing anything under `lib/src/internal/`,
-except for files that are themselves inside `lib/src/internal/`.
+  # Multiple sources/targets can be specified as lists
+  - type: deny
+    source:
+      - lib/feature_a/**
+      - lib/feature_b/**
+    target:
+      - package:my_app/src/secret/**
+      - package:my_app/src/private/**
+```

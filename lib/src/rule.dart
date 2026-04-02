@@ -2,25 +2,45 @@ import 'package:equatable/equatable.dart';
 import 'package:glob/glob.dart';
 
 abstract class Rule with EquatableMixin {
-  Rule({required this.source, required this.target, required this.type, String? description})
+  Rule({required this.sources, required this.targets, required this.type, String? description})
     : _description = description;
 
   factory Rule.fromJson(Map<dynamic, dynamic> json) {
-    String getValue(String key) {
-      final value = json[key] as String?;
-      if (value == null) {
-        throw ArgumentError('$key must be non-null');
+    List<String> getValues(String key) {
+      final value = json[key];
+      if (value is String) {
+        if (value.isEmpty) {
+          throw ArgumentError('$key must be non-empty');
+        }
+        return [value];
       }
-      if (value.isEmpty) {
-        throw ArgumentError('$key must be non-empty');
+      if (value is List) {
+        final strings = value.cast<String>();
+        if (strings.isEmpty) {
+          throw ArgumentError('$key must be non-empty');
+        }
+        for (final s in strings) {
+          if (s.isEmpty) {
+            throw ArgumentError('$key entries must be non-empty');
+          }
+        }
+        return strings;
+      }
+      throw ArgumentError('$key must be a string or list of strings');
+    }
+
+    String getType() {
+      final value = json['type'] as String?;
+      if (value == null || value.isEmpty) {
+        throw ArgumentError('type must be non-empty');
       }
       return value;
     }
 
     final description = json['description'] as String?;
-    return switch (getValue('type')) {
-      'allow' => Allow(source: getValue('source'), target: getValue('target'), description: description),
-      'deny' => Deny(source: getValue('source'), target: getValue('target'), description: description),
+    return switch (getType()) {
+      'allow' => Allow(sources: getValues('source'), targets: getValues('target'), description: description),
+      'deny' => Deny(sources: getValues('source'), targets: getValues('target'), description: description),
       final t => throw ArgumentError('Unknown rule type: $t'),
     };
   }
@@ -28,10 +48,10 @@ abstract class Rule with EquatableMixin {
   final String? type;
 
   final String? _description;
-  String get description => _description ?? '$runtimeType: $source -> $target';
+  String get description => _description ?? '$runtimeType: $sources -> $targets';
 
-  final String source;
-  final String target;
+  final List<String> sources;
+  final List<String> targets;
 
   static String _normalizePath(String path, String packageName) {
     if (path.startsWith('package:')) {
@@ -42,33 +62,33 @@ abstract class Rule with EquatableMixin {
   }
 
   bool matches(String sourcePackage, String source, String target) =>
-      Glob(_normalizePath(this.source, sourcePackage)).matches(source) &&
-      Glob(_normalizePath(this.target, sourcePackage)).matches(target);
+      sources.any((s) => Glob(_normalizePath(s, sourcePackage)).matches(source)) &&
+      targets.any((t) => Glob(_normalizePath(t, sourcePackage)).matches(target));
 
   bool? isAllowed(String sourcePackage, String source, String target);
 }
 
 class Allow extends Rule {
-  Allow({required super.source, required super.target, super.description}) : super(type: 'allow');
+  Allow({required super.sources, required super.targets, super.description}) : super(type: 'allow');
 
   @override
   bool? isAllowed(String sourcePackage, String source, String target) =>
       matches(sourcePackage, source, target) ? true : null;
 
   @override
-  List<Object?> get props => [source, target];
+  List<Object?> get props => [sources, targets];
 }
 
 class Deny extends Rule {
-  Deny({required super.source, required super.target, super.description}) : super(type: 'disallow');
+  Deny({required super.sources, required super.targets, super.description}) : super(type: 'disallow');
 
   @override
   bool? isAllowed(String sourcePackage, String source, String target) =>
       matches(sourcePackage, source, target) ? false : null;
 
   @override
-  List<Object?> get props => [source, target];
+  List<Object?> get props => [sources, targets];
 
   @override
-  String toString() => 'Disallow(source: $source, target: $target, description: $description)';
+  String toString() => 'Disallow(sources: $sources, targets: $targets, description: $description)';
 }

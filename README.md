@@ -1,5 +1,4 @@
 [![pub package](https://img.shields.io/pub/v/linesman.svg?label=linesman&color=blue)](https://pub.dev/packages/linesman)
-[![pub package](https://img.shields.io/pub/v/linesman_lint.svg?label=linesman_lint&color=blue)](https://pub.dev/packages/linesman_lint)
 ![main](https://github.com/tjarvstrand/linesman/actions/workflows/test.yaml/badge.svg?branch=main)
 
 
@@ -9,37 +8,65 @@ Linesman helps you enforce boundaries between different parts of your codebase b
 define and validate imports between modules, components, or any other logical units in your
 Dart application.
 
+## Requirements
+
+Dart 3.10 or later.
+
 ## Install
 
-Linesman is currently only available as a (`custom_lint`)[https://pub.dev/packages/custom_lint]
-plugin. To use it, follow the instructions for that package, then add you rules to
-`analysis_options.yaml`, e.g:
+Add linesman as a dev dependency:
 
 ```yaml
-custom_lint:
-  rules:
-    - linesman_lint:
-      allowByDefault: false
-      rules:
-        - type: allow
-          source: test.dart
-          target: some_file.dart
-        - type: deny
-          source: test.dart
-          target: some_other_file.dart
-        - type: deny
-          source: test.dart
-          target: package:some_package/some_other_file.dart
+# pubspec.yaml
+dev_dependencies:
+  linesman: ^0.1.0
+```
+
+Enable the plugin in `analysis_options.yaml`:
+
+```yaml
+# analysis_options.yaml
+plugins:
+  linesman: ^0.1.0
+```
+
+## Configuration
+
+Rules are defined in a `linesman.yaml` file in your package root:
+
+```yaml
+# linesman.yaml
+allowByDefault: false
+rules:
+  - type: allow
+    source: test.dart
+    target: some_file.dart
+  - type: deny
+    source: test.dart
+    target: some_other_file.dart
+  - type: deny
+    source: test.dart
+    target: package:some_package/some_other_file.dart
 ```
 
 ## Usage
 
-The allowed imports in your code are defined by a list of rules set in your config in
-`analysis_options.yaml`.
+The allowed imports in your code are defined by the list of rules in `linesman.yaml`.
 
 There are two types of rules:
 - `allow`: Allows imports of files that match the target glob into files that match the source glob.
 - `deny`: Denies imports of files that match the target glob into files that match the source glob.
+
+`source` and `target` accept either a single glob pattern or a list of patterns:
+
+```yaml
+rules:
+  - type: deny
+    source:
+      - lib/feature_a/**
+      - lib/feature_b/**
+    target: package:my_app/src/internal/**
+```
 
 Matching is performed using the [glob](https://pub.dev/packages/glob) package, which means you can
 use wildcards and other glob patterns to specify your source and target files.
