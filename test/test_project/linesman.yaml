@@ -1,4 +1,8 @@
 verbose: true
+groups:
+  nested:
+    - package:linesman_example/more_imports/*
+    - package:linesman_example/**/*.dart
 rules:
   - type: deny
     source: test.dart
@@ -14,7 +18,4 @@ rules:
     target: package:linesman_example/import4.dart
   - type: deny
     source: '*.dart'
-    target: package:linesman_example/more_imports/*
-  - type: deny
-    source: '*.dart'
-    target: package:linesman_example/**/*.dart
+    target: $nested

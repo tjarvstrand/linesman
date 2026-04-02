@@ -96,5 +96,63 @@ void main() {
         expect(rule.targets, equals(['bar', 'qux']));
       });
     });
+
+    group('groups', () {
+      test('expands group reference in source', () {
+        final rule = Rule.fromJson(
+          {'type': 'deny', 'source': r'$mygroup', 'target': 'bar'},
+          groups: {
+            'mygroup': ['foo', 'baz'],
+          },
+        );
+        expect(rule.sources, equals(['foo', 'baz']));
+        expect(rule.targets, equals(['bar']));
+      });
+      test('expands group reference in target', () {
+        final rule = Rule.fromJson(
+          {'type': 'deny', 'source': 'foo', 'target': r'$mygroup'},
+          groups: {
+            'mygroup': ['bar', 'baz'],
+          },
+        );
+        expect(rule.sources, equals(['foo']));
+        expect(rule.targets, equals(['bar', 'baz']));
+      });
+      test('mixes group references and inline patterns', () {
+        final rule = Rule.fromJson(
+          {
+            'type': 'deny',
+            'source': [r'$mygroup', 'inline'],
+            'target': 'bar',
+          },
+          groups: {
+            'mygroup': ['foo', 'baz'],
+          },
+        );
+        expect(rule.sources, equals(['foo', 'baz', 'inline']));
+      });
+      test('throws on unknown group reference', () {
+        expect(
+          () => Rule.fromJson(
+            {'type': 'deny', 'source': r'$unknown', 'target': 'bar'},
+          ),
+          throwsArgumentError,
+        );
+      });
+      test('Config.fromJson parses groups and passes them to rules', () {
+        final config = Config.fromJson({
+          'groups': {
+            'internal': ['lib/src/internal/**', 'lib/src/private/**'],
+          },
+          'rules': [
+            {'type': 'deny', 'source': '**', 'target': r'$internal'},
+          ],
+        });
+        expect(config.groups, {
+          'internal': ['lib/src/internal/**', 'lib/src/private/**'],
+        });
+        expect(config.rules.first.targets, equals(['lib/src/internal/**', 'lib/src/private/**']));
+      });
+    });
   });
 }

@@ -68,6 +68,31 @@ rules:
     target: package:my_app/src/internal/**
 ```
 
+### Groups
+
+You can define named groups of patterns under the `groups` key and reference them in rules with a
+`$` prefix. Groups and inline patterns can be mixed in the same list:
+
+```yaml
+groups:
+  internal:
+    - lib/src/internal/**
+    - lib/src/private/**
+  features:
+    - lib/feature_a/**
+    - lib/feature_b/**
+
+rules:
+  - type: deny
+    source: $features
+    target: $internal
+  - type: deny
+    source:
+      - $features
+      - lib/utils/**
+    target: $internal
+```
+
 Matching is performed using the [glob](https://pub.dev/packages/glob) package, which means you can
 use wildcards and other glob patterns to specify your source and target files.
 

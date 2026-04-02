@@ -20,23 +20,31 @@ plugins:
 
 ```yaml
 # linesman.yaml
+
+# Define reusable named groups of file patterns
+groups:
+  internal:
+    - package:my_app/src/internal/**
+    - package:my_app/src/private/**
+  features:
+    - lib/feature_a/**
+    - lib/feature_b/**
+
 rules:
   # Deny all files from importing internal code
   - type: deny
     source: "**"
-    target: package:my_app/src/internal/**
+    target: $internal
 
   # Except internal code can import other internal code
   - type: allow
-    source: package:my_app/src/internal/**
-    target: package:my_app/src/internal/**
+    source: $internal
+    target: $internal
 
-  # Multiple sources/targets can be specified as lists
+  # Groups and inline patterns can be mixed
   - type: deny
     source:
-      - lib/feature_a/**
-      - lib/feature_b/**
-    target:
-      - package:my_app/src/secret/**
-      - package:my_app/src/private/**
+      - $features
+      - lib/utils/**
+    target: $internal
 ```

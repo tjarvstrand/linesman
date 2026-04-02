@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Configuration is now read from a dedicated `linesman.yaml` file instead of `analysis_options.yaml`.
  - `source` and `target` in rules now accept a list of patterns in addition to a single string.
 
+### Added
+ - Named groups: define reusable sets of file patterns under `groups` and reference them in rules with a `$` prefix.
+
 ## 0.1.0+1 - 2025-06-30
 
 ### Fixed

@@ -5,28 +5,42 @@ abstract class Rule with EquatableMixin {
   Rule({required this.sources, required this.targets, required this.type, String? description})
     : _description = description;
 
-  factory Rule.fromJson(Map<dynamic, dynamic> json) {
+  factory Rule.fromJson(Map<dynamic, dynamic> json, {Map<String, List<String>> groups = const {}}) {
     List<String> getValues(String key) {
       final value = json[key];
+      List<String> raw;
       if (value is String) {
         if (value.isEmpty) {
           throw ArgumentError('$key must be non-empty');
         }
-        return [value];
-      }
-      if (value is List) {
-        final strings = value.cast<String>();
-        if (strings.isEmpty) {
+        raw = [value];
+      } else if (value is List) {
+        raw = value.cast<String>();
+        if (raw.isEmpty) {
           throw ArgumentError('$key must be non-empty');
         }
-        for (final s in strings) {
+        for (final s in raw) {
           if (s.isEmpty) {
             throw ArgumentError('$key entries must be non-empty');
           }
         }
-        return strings;
+      } else {
+        throw ArgumentError('$key must be a string or list of strings');
       }
-      throw ArgumentError('$key must be a string or list of strings');
+      final expanded = <String>[];
+      for (final s in raw) {
+        if (s.startsWith(r'$')) {
+          final groupName = s.substring(1);
+          final group = groups[groupName];
+          if (group == null) {
+            throw ArgumentError('Unknown group: $groupName');
+          }
+          expanded.addAll(group);
+        } else {
+          expanded.add(s);
+        }
+      }
+      return expanded;
     }
 
     String getType() {
