@@ -154,5 +154,92 @@ void main() {
         expect(config.rules.first.targets, equals(['lib/src/internal/**', 'lib/src/private/**']));
       });
     });
+
+    group('layers', () {
+      test('allows downward imports', () {
+        final config = Config.fromJson({
+          'layers': ['lib/ui/**', 'lib/domain/**', 'lib/data/**'],
+        });
+        // ui -> domain: allowed
+        expect(check(config, 'p', 'p/lib/ui/page.dart', 'p/lib/domain/model.dart').allowed, isTrue);
+        // ui -> data: allowed
+        expect(check(config, 'p', 'p/lib/ui/page.dart', 'p/lib/data/repo.dart').allowed, isTrue);
+        // domain -> data: allowed
+        expect(check(config, 'p', 'p/lib/domain/model.dart', 'p/lib/data/repo.dart').allowed, isTrue);
+      });
+      test('denies upward imports', () {
+        final config = Config.fromJson({
+          'layers': ['lib/ui/**', 'lib/domain/**', 'lib/data/**'],
+        });
+        // data -> ui: denied
+        expect(check(config, 'p', 'p/lib/data/repo.dart', 'p/lib/ui/page.dart').allowed, isFalse);
+        // data -> domain: denied
+        expect(check(config, 'p', 'p/lib/data/repo.dart', 'p/lib/domain/model.dart').allowed, isFalse);
+        // domain -> ui: denied
+        expect(check(config, 'p', 'p/lib/domain/model.dart', 'p/lib/ui/page.dart').allowed, isFalse);
+      });
+      test('denies peer imports within the same layer', () {
+        final config = Config.fromJson({
+          'layers': [
+            [r'$http', r'$db'],
+            'lib/domain/**',
+          ],
+          'groups': {
+            'http': ['lib/http/**'],
+            'db': ['lib/db/**'],
+          },
+        });
+        // http -> db: denied
+        expect(check(config, 'p', 'p/lib/http/client.dart', 'p/lib/db/repo.dart').allowed, isFalse);
+        // db -> http: denied
+        expect(check(config, 'p', 'p/lib/db/repo.dart', 'p/lib/http/client.dart').allowed, isFalse);
+      });
+      test('allows imports within the same non-peer group', () {
+        final config = Config.fromJson({
+          'layers': ['lib/ui/**', 'lib/domain/**'],
+        });
+        // ui -> ui: allowed (same group, not peers)
+        expect(check(config, 'p', 'p/lib/ui/page.dart', 'p/lib/ui/widget.dart').allowed, isTrue);
+      });
+      test('peers can import downward', () {
+        final config = Config.fromJson({
+          'layers': [
+            [r'$http', r'$db'],
+            'lib/domain/**',
+          ],
+          'groups': {
+            'http': ['lib/http/**'],
+            'db': ['lib/db/**'],
+          },
+        });
+        // http -> domain: allowed
+        expect(check(config, 'p', 'p/lib/http/client.dart', 'p/lib/domain/model.dart').allowed, isTrue);
+        // db -> domain: allowed
+        expect(check(config, 'p', 'p/lib/db/repo.dart', 'p/lib/domain/model.dart').allowed, isTrue);
+      });
+      test('explicit rules override layer rules', () {
+        final config = Config.fromJson({
+          'layers': ['lib/ui/**', 'lib/domain/**'],
+          'rules': [
+            {'type': 'allow', 'source': 'lib/domain/**', 'target': 'lib/ui/**'},
+          ],
+        });
+        // domain -> ui: normally denied by layers, but allowed by explicit rule
+        expect(check(config, 'p', 'p/lib/domain/model.dart', 'p/lib/ui/page.dart').allowed, isTrue);
+      });
+      test('uses groups in layer entries', () {
+        final config = Config.fromJson({
+          'groups': {
+            'ui': ['lib/ui/**'],
+            'domain': ['lib/domain/**'],
+          },
+          'layers': [r'$ui', r'$domain'],
+        });
+        // domain -> ui: denied
+        expect(check(config, 'p', 'p/lib/domain/model.dart', 'p/lib/ui/page.dart').allowed, isFalse);
+        // ui -> domain: allowed
+        expect(check(config, 'p', 'p/lib/ui/page.dart', 'p/lib/domain/model.dart').allowed, isTrue);
+      });
+    });
   });
 }

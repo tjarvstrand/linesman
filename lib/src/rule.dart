@@ -102,6 +102,5 @@ class Deny extends Rule {
   List<Object?> get props => [sources, targets];
 
   @override
-  @override
   String toString() => 'Deny(sources: $sources, targets: $targets, message: $message)';
 }

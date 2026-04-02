@@ -21,20 +21,15 @@ class LinesmanRule extends AnalysisRule {
 
   @override
   void registerNodeProcessors(RuleVisitorRegistry registry, RuleContext context) {
-    final package = context.package;
-    if (package == null) {
+    final packageRoot = context.package?.root.path;
+    if (packageRoot == null) {
       return;
     }
 
-    final packageRoot = package.root.path;
     final configFile = io.File(p.join(packageRoot, 'linesman.yaml'));
-    Config config;
-    if (configFile.existsSync()) {
-      final yaml = loadYaml(configFile.readAsStringSync());
-      config = Config.fromJson(yaml as Map);
-    } else {
-      config = const Config();
-    }
+    final config = configFile.existsSync()
+        ? Config.fromJson(loadYaml(configFile.readAsStringSync()) as Map)
+        : const Config();
 
     final visitor = _Visitor(this, context, config);
     registry.addImportDirective(this, visitor);

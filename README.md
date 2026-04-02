@@ -65,8 +65,8 @@ There are two types of rules:
 rules:
   - type: deny
     source:
-      - lib/feature_a/**
-      - lib/feature_b/**
+      - feature_a/**
+      - feature_b/**
     target: package:my_app/src/internal/**
 ```
 
@@ -78,11 +78,11 @@ You can define named groups of patterns under the `groups` key and reference the
 ```yaml
 groups:
   internal:
-    - lib/src/internal/**
-    - lib/src/private/**
+    - src/internal/**
+    - src/private/**
   features:
-    - lib/feature_a/**
-    - lib/feature_b/**
+    - feature_a/**
+    - feature_b/**
 
 rules:
   - type: deny
@@ -91,9 +91,31 @@ rules:
   - type: deny
     source:
       - $features
-      - lib/utils/**
+      - utils/**
     target: $internal
 ```
+
+### Layers
+
+The `layers` key enforces a layered architecture. Each entry is a group reference or glob pattern, or a list of the
+same. Imports can only go downward — lower layers cannot import from higher layers:
+
+```yaml
+groups:
+  ui:
+    - ui/**
+  domain:
+    - domain/**
+  data:
+    - data/**
+
+layers:
+  - $application
+  - [$domain, util/**]
+  - [$http_client, $db, $messaging]
+```
+
+Explicit rules in `rules` override layer-generated rules, so you can make exceptions where needed.
 
 Matching is performed using the [glob](https://pub.dev/packages/glob) package, which means you can
 use wildcards and other glob patterns to specify your source and target files.

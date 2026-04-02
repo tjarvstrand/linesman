@@ -3,6 +3,9 @@ groups:
   nested:
     - package:linesman_example/more_imports/*
     - package:linesman_example/**/*.dart
+layers:
+  - ui/**
+  - data/**
 rules:
   - type: deny
     source: test.dart

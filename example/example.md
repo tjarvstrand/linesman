@@ -27,8 +27,8 @@ groups:
     - package:my_app/src/internal/**
     - package:my_app/src/private/**
   features:
-    - lib/feature_a/**
-    - lib/feature_b/**
+    - feature_a/**
+    - feature_b/**
 
 rules:
   # Deny all files from importing internal code
@@ -45,6 +45,6 @@ rules:
   - type: deny
     source:
       - $features
-      - lib/utils/**
+      - utils/**
     target: $internal
 ```
