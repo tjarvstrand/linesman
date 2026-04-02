@@ -1,0 +1,11 @@
+name: linesman_example
+description: Linesman example package
+version: 0.1.0+1
+publish_to: none
+
+environment:
+  sdk: ">=3.10.0 <4.0.0"
+
+dev_dependencies:
+  linesman:
+    path: ..

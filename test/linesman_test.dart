@@ -25,13 +25,19 @@ void main() {
         expect(result.matchedRules, isEmpty);
       });
       test('returns true if no disallow rules match and allowByDefault is true', () {
-        final config = Config(rules: [Deny(source: 'bar', target: 'bar')], allowByDefault: true);
+        final config = Config(
+          rules: [Deny(source: 'bar', target: 'bar')],
+          allowByDefault: true,
+        );
         final result = check(config, 'package', 'foo', 'bar');
         expect(result.allowed, isTrue);
         expect(result.matchedRules, isEmpty);
       });
       test('returns false if no allow rules match and allowByDefault is false', () {
-        final config = Config(rules: [Allow(source: 'bar', target: 'bar')], allowByDefault: false);
+        final config = Config(
+          rules: [Allow(source: 'bar', target: 'bar')],
+          allowByDefault: false,
+        );
         final result = check(config, 'package', 'foo', 'bar');
         expect(result.allowed, isFalse);
         expect(result.matchedRules, isEmpty);

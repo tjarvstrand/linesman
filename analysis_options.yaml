@@ -1,5 +1,9 @@
 include: package:strict/analysis_options.yaml
 
+analyzer:
+  exclude:
+    - example/**
+
 language:
   strict-casts: true
   strict-inference: true

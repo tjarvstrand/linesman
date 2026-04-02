@@ -1,0 +1,20 @@
+verbose: true
+rules:
+  - type: deny
+    source: test.dart
+    target: import1.dart
+  - type: deny
+    source: test.dart
+    target: '*2.dart'
+  - type: deny
+    source: test.dart
+    target: package:linesman_example/import3.dart
+  - type: deny
+    source: '**'
+    target: package:linesman_example/import4.dart
+  - type: deny
+    source: '*.dart'
+    target: package:linesman_example/more_imports/*
+  - type: deny
+    source: '*.dart'
+    target: package:linesman_example/**/*.dart

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+ - Migrated from `custom_lint` to the native `analysis_server_plugin` architecture (requires Dart 3.10+).
+ - Merged `linesman` and `linesman_lint` into a single `linesman` package.
+ - Configuration is now read from a dedicated `linesman.yaml` file instead of `analysis_options.yaml`.
+
 ### Fixed
  - Clarified README.
 
