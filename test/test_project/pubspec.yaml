@@ -8,4 +8,4 @@ environment:
 
 dev_dependencies:
   linesman:
-    path: ..
+    path: ../..

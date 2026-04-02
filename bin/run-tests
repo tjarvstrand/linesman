@@ -7,10 +7,10 @@ export THIS_DIR=$(cd $(dirname "${BASH_SOURCE[$((${#BASH_SOURCE[@]} - 1))]}"); p
 ROOT_DIR="$THIS_DIR/.."
 
 dart pub get
-(cd "$ROOT_DIR/example"; dart pub get)
+(cd "$ROOT_DIR/test/test_project"; dart pub get)
 
 (cd "$ROOT_DIR"; dart analyze --fatal-infos)
 
 (cd "$ROOT_DIR"; dart test)
 
-(cd "$ROOT_DIR/example"; dart analyze)
+(cd "$ROOT_DIR/test/test_project"; dart analyze)
