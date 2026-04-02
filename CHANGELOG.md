@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
  - Named groups: define reusable sets of file patterns under `groups` and reference them in rules with a `$` prefix.
+ - Custom `message` field on deny rules, shown in the diagnostic output.
 
 ## 0.1.0+1 - 2025-06-30
 

@@ -44,6 +44,7 @@ rules:
   - type: deny
     source: test.dart
     target: some_other_file.dart
+    message: Use some_file.dart instead
   - type: deny
     source: test.dart
     target: package:some_package/some_other_file.dart
@@ -56,6 +57,7 @@ The allowed imports in your code are defined by the list of rules in `linesman.y
 There are two types of rules:
 - `allow`: Allows imports of files that match the target glob into files that match the source glob.
 - `deny`: Denies imports of files that match the target glob into files that match the source glob.
+  Supports an optional `message` field shown in the diagnostic output.
 
 `source` and `target` accept either a single glob pattern or a list of patterns:
 

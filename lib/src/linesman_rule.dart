@@ -14,7 +14,7 @@ import 'package:yaml/yaml.dart';
 class LinesmanRule extends AnalysisRule {
   LinesmanRule() : super(name: 'linesman', description: 'Enforce import boundary rules.');
 
-  static const LintCode code = LintCode('linesman', 'Disallowed import');
+  static const LintCode code = LintCode('linesman', 'Disallowed import{0}');
 
   @override
   DiagnosticCode get diagnosticCode => code;
@@ -69,10 +69,12 @@ class _Visitor extends SimpleAstVisitor<void> {
     final sourcePath = sourceUri.path;
     final targetPath = uri.source.uri.path;
 
-    final (:allowed, matchedRules: _) = check(config, sourcePackage, sourcePath, targetPath);
+    final (:allowed, :matchedRules) = check(config, sourcePackage, sourcePath, targetPath);
 
     if (!allowed) {
-      rule.reportAtNode(node);
+      final lastDeny = matchedRules.whereType<Deny>().lastOrNull;
+      final message = lastDeny?.message;
+      rule.reportAtNode(node, arguments: [if (message != null) ': $message' else '']);
     }
   }
 }

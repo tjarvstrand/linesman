@@ -2,8 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:glob/glob.dart';
 
 abstract class Rule with EquatableMixin {
-  Rule({required this.sources, required this.targets, required this.type, String? description})
-    : _description = description;
+  Rule({required this.sources, required this.targets, required this.type});
 
   factory Rule.fromJson(Map<dynamic, dynamic> json, {Map<String, List<String>> groups = const {}}) {
     List<String> getValues(String key) {
@@ -51,18 +50,15 @@ abstract class Rule with EquatableMixin {
       return value;
     }
 
-    final description = json['description'] as String?;
+    final message = json['message'] as String?;
     return switch (getType()) {
-      'allow' => Allow(sources: getValues('source'), targets: getValues('target'), description: description),
-      'deny' => Deny(sources: getValues('source'), targets: getValues('target'), description: description),
+      'allow' => Allow(sources: getValues('source'), targets: getValues('target')),
+      'deny' => Deny(sources: getValues('source'), targets: getValues('target'), message: message),
       final t => throw ArgumentError('Unknown rule type: $t'),
     };
   }
 
   final String? type;
-
-  final String? _description;
-  String get description => _description ?? '$runtimeType: $sources -> $targets';
 
   final List<String> sources;
   final List<String> targets;
@@ -83,7 +79,7 @@ abstract class Rule with EquatableMixin {
 }
 
 class Allow extends Rule {
-  Allow({required super.sources, required super.targets, super.description}) : super(type: 'allow');
+  Allow({required super.sources, required super.targets}) : super(type: 'allow');
 
   @override
   bool? isAllowed(String sourcePackage, String source, String target) =>
@@ -94,7 +90,9 @@ class Allow extends Rule {
 }
 
 class Deny extends Rule {
-  Deny({required super.sources, required super.targets, super.description}) : super(type: 'disallow');
+  Deny({required super.sources, required super.targets, this.message}) : super(type: 'disallow');
+
+  final String? message;
 
   @override
   bool? isAllowed(String sourcePackage, String source, String target) =>
@@ -104,5 +102,6 @@ class Deny extends Rule {
   List<Object?> get props => [sources, targets];
 
   @override
-  String toString() => 'Disallow(sources: $sources, targets: $targets, description: $description)';
+  @override
+  String toString() => 'Deny(sources: $sources, targets: $targets, message: $message)';
 }

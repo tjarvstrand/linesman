@@ -7,6 +7,7 @@ rules:
   - type: deny
     source: test.dart
     target: import1.dart
+    message: Use import3.dart instead
   - type: deny
     source: test.dart
     target: '*2.dart'
