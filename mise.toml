@@ -17,7 +17,7 @@ run = "dart format --output=none --set-exit-if-changed $(git ls-files lib test)"
 
 [tasks.analyze]
 description = "Run static analysis"
-depends = ["deps", "generate"]
+depends = ["deps"]
 run = "dart analyze --fatal-infos"
 
 [tasks.format]

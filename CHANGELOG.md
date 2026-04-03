@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Added test_project to .pubignore
  - Untracked pubspec.lock
 
+### Changed
+ - Use shared release script
+
 ## [0.2.0] - 2026-04-03
 
 ### Changed
