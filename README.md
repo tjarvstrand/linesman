@@ -70,6 +70,18 @@ rules:
     target: package:my_app/src/internal/**
 ```
 
+Matching is performed using the [glob](https://pub.dev/packages/glob) package, which means you can
+use wildcards and other glob patterns to specify your source and target files.
+
+Globs can be specified with a `package:<package_name>/` prefix to match files in a specific package.
+If no such prefix is present, the glob will only match files in the current package.
+
+The ordering of rules matters. Subsequent rules will override previous ones that match the same
+source and target.
+
+If no rules are defined, or if a particular source is not matched by any rule, the default behavior
+is defined by the `allowByDefault` setting, which itself defaults to `true`.
+
 ### Groups
 
 You can define named groups of patterns under the `groups` key and reference them in rules with a
@@ -115,19 +127,21 @@ layers:
   - [$http_client, $db, $messaging]
 ```
 
-Explicit rules in `rules` override layer-generated rules, so you can make exceptions where needed.
+By default, upper layers can import from any lower layer. Set `transitiveLayers: false` to restrict
+imports to only the immediately adjacent layer below:
 
-Matching is performed using the [glob](https://pub.dev/packages/glob) package, which means you can
-use wildcards and other glob patterns to specify your source and target files.
+```yaml
+transitiveLayers: false
+layers:
+  - $ui
+  - $domain
+  - $data
+```
 
-Globs can be specified with a `package:<package_name>/` prefix to match files in a specific package.
-If no such prefix is present, the glob will only match files in the current package.
+With this setting, `ui` can import from `domain` but not from `data`.
 
-The ordering of rules matters. Subsequent rules will override previous ones that match the same
-source and target.
-
-If no rules are defined, or if a particular source is not matched by any rule, the default behavior
-is defined by the `allowByDefault` setting, which itself defaults to `true`.
+Using layers will trigger automatic generation of an initial rule set that is applied before explicit `rules`. This
+makes it easy to create overrides where exceptions are needed.
 
 ## Contributing
 

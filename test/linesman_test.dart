@@ -1,6 +1,8 @@
 // ignore_for_file: avoid_redundant_argument_values
 
 import 'package:linesman/linesman.dart';
+import 'package:linesman/src/config.dart' show Config;
+import 'package:linesman/src/rule.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -26,7 +28,9 @@ void main() {
       });
       test('returns true if no disallow rules match and allowByDefault is true', () {
         final config = Config(
-          rules: [Deny(sources: ['bar'], targets: ['bar'])],
+          rules: [
+            Deny(sources: ['bar'], targets: ['bar']),
+          ],
           allowByDefault: true,
         );
         final result = check(config, 'package', 'foo', 'bar');
@@ -35,7 +39,9 @@ void main() {
       });
       test('returns false if no allow rules match and allowByDefault is false', () {
         final config = Config(
-          rules: [Allow(sources: ['bar'], targets: ['bar'])],
+          rules: [
+            Allow(sources: ['bar'], targets: ['bar']),
+          ],
           allowByDefault: false,
         );
         final result = check(config, 'package', 'foo', 'bar');
@@ -132,12 +138,7 @@ void main() {
         expect(rule.sources, equals(['foo', 'baz', 'inline']));
       });
       test('throws on unknown group reference', () {
-        expect(
-          () => Rule.fromJson(
-            {'type': 'deny', 'source': r'$unknown', 'target': 'bar'},
-          ),
-          throwsArgumentError,
-        );
+        expect(() => Rule.fromJson({'type': 'deny', 'source': r'$unknown', 'target': 'bar'}), throwsArgumentError);
       });
       test('Config.fromJson parses groups and passes them to rules', () {
         final config = Config.fromJson({
@@ -239,6 +240,65 @@ void main() {
         expect(check(config, 'p', 'p/lib/domain/model.dart', 'p/lib/ui/page.dart').allowed, isFalse);
         // ui -> domain: allowed
         expect(check(config, 'p', 'p/lib/ui/page.dart', 'p/lib/domain/model.dart').allowed, isTrue);
+      });
+      group('transitiveLayers', () {
+        test('defaults to true, allowing skipping layers', () {
+          final config = Config.fromJson({
+            'layers': ['lib/ui/**', 'lib/domain/**', 'lib/data/**'],
+          });
+          // ui -> data: allowed (skips domain)
+          expect(check(config, 'p', 'p/lib/ui/page.dart', 'p/lib/data/repo.dart').allowed, isTrue);
+        });
+        test('when false, denies non-adjacent downward imports', () {
+          final config = Config.fromJson({
+            'transitiveLayers': false,
+            'layers': ['lib/ui/**', 'lib/domain/**', 'lib/data/**'],
+          });
+          // ui -> domain: allowed (adjacent)
+          expect(check(config, 'p', 'p/lib/ui/page.dart', 'p/lib/domain/model.dart').allowed, isTrue);
+          // ui -> data: denied (non-adjacent)
+          expect(check(config, 'p', 'p/lib/ui/page.dart', 'p/lib/data/repo.dart').allowed, isFalse);
+          // domain -> data: allowed (adjacent)
+          expect(check(config, 'p', 'p/lib/domain/model.dart', 'p/lib/data/repo.dart').allowed, isTrue);
+        });
+        test('when false, still denies upward imports', () {
+          final config = Config.fromJson({
+            'transitiveLayers': false,
+            'layers': ['lib/ui/**', 'lib/domain/**', 'lib/data/**'],
+          });
+          // data -> ui: denied
+          expect(check(config, 'p', 'p/lib/data/repo.dart', 'p/lib/ui/page.dart').allowed, isFalse);
+          // data -> domain: denied
+          expect(check(config, 'p', 'p/lib/data/repo.dart', 'p/lib/domain/model.dart').allowed, isFalse);
+        });
+        test('when false, still denies peer imports', () {
+          final config = Config.fromJson({
+            'transitiveLayers': false,
+            'layers': [
+              [r'$http', r'$db'],
+              'lib/domain/**',
+            ],
+            'groups': {
+              'http': ['lib/http/**'],
+              'db': ['lib/db/**'],
+            },
+          });
+          expect(check(config, 'p', 'p/lib/http/client.dart', 'p/lib/db/repo.dart').allowed, isFalse);
+          expect(check(config, 'p', 'p/lib/db/repo.dart', 'p/lib/http/client.dart').allowed, isFalse);
+        });
+        test('when false with allowByDefault false, only allows adjacent', () {
+          final config = Config.fromJson({
+            'allowByDefault': false,
+            'transitiveLayers': false,
+            'layers': ['lib/ui/**', 'lib/domain/**', 'lib/data/**'],
+          });
+          // ui -> domain: allowed (adjacent)
+          expect(check(config, 'p', 'p/lib/ui/page.dart', 'p/lib/domain/model.dart').allowed, isTrue);
+          // ui -> data: denied (non-adjacent)
+          expect(check(config, 'p', 'p/lib/ui/page.dart', 'p/lib/data/repo.dart').allowed, isFalse);
+          // data -> ui: denied (upward)
+          expect(check(config, 'p', 'p/lib/data/repo.dart', 'p/lib/ui/page.dart').allowed, isFalse);
+        });
       });
     });
   });

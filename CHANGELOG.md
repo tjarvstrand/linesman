@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Named groups: define reusable sets of file patterns under `groups` and reference them in rules with a `$` prefix.
  - Custom `message` field on deny rules, shown in the diagnostic output.
  - Layer enforcement via the `layers` key: define an ordered architecture where imports can only go downward, with optional peer isolation.
+ - `transitiveLayers` option (default `true`): when `false`, layers can only import from the layer directly below them.
 
 ## 0.1.0+1 - 2025-06-30
 

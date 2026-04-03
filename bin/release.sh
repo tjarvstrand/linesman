@@ -8,11 +8,10 @@ usage() {
 
 [ -z "$1" ] && usage
 
-# Resolve paths relative to the script location (cli/scripts/).
+# Resolve paths relative to the script location.
 script_dir="$(cd "$(dirname "$0")" && pwd)"
-cli_dir="$(dirname "$script_dir")"
-repo_dir="$(dirname "$cli_dir")"
-cd "$cli_dir"
+repo_dir="$(dirname "$script_dir")"
+cd "$repo_dir"
 
 # Detect VCS.
 if [ -d "$repo_dir/.jj" ] && command -v jj >/dev/null 2>&1; then
@@ -63,9 +62,6 @@ date="$(date +%Y-%m-%d)"
 # Update version in pubspec.yaml and version.dart.
 sed -i.bak "s/^version: .*/version: $version/" pubspec.yaml
 rm -f pubspec.yaml.bak
-sed -i.bak "s/^const version = .*/const version = '$version';/" lib/src/version.dart
-rm -f lib/src/version.dart.bak
-
 # Ensure pub.dev authentication (no-op if already logged in).
 dart pub login
 

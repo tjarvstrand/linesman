@@ -14,7 +14,8 @@ class Config {
         },
     };
     final allowByDefault = json['allowByDefault'] as bool? ?? true;
-    final layerRules = _parseLayerRules(json['layers'] as List? ?? [], groups, allowByDefault);
+    final transitiveLayers = json['transitiveLayers'] as bool? ?? true;
+    final layerRules = _parseLayerRules(json['layers'] as List? ?? [], groups, allowByDefault, transitiveLayers);
     final explicitRules =
         (json['rules'] as List<dynamic>?)?.map((e) => Rule.fromJson(e as Map, groups: groups)).toList() ?? [];
     return Config(
@@ -25,7 +26,12 @@ class Config {
     );
   }
 
-  static List<Rule> _parseLayerRules(List<dynamic> layers, Map<String, List<String>> groups, bool allowByDefault) {
+  static List<Rule> _parseLayerRules(
+    List<dynamic> layers,
+    Map<String, List<String>> groups,
+    bool allowByDefault,
+    bool transitiveLayers,
+  ) {
     final parsedLayers = [
       for (final layer in layers)
         if (layer is String)
@@ -37,18 +43,25 @@ class Config {
     ];
 
     return [
-      for (final (i, upperLayer) in parsedLayers.indexed) ...[
-        for (final peerA in upperLayer)
-          for (final peerB in upperLayer)
+      for (final (i, layer) in parsedLayers.indexed) ...[
+        // Deny peer imports within the same layer.
+        for (final peerA in layer)
+          for (final peerB in layer)
             if (peerA != peerB) Deny(sources: peerA, targets: peerB, message: 'Layer violation'),
+        // Cross-layer rules: deny upward, allow/deny downward based on adjacency.
         if (i < parsedLayers.length - 1)
-          for (final lowerLayer in parsedLayers.sublist(i + 1))
+          for (final (j, lowerLayer) in parsedLayers.sublist(i + 1).indexed)
             for (final lowerPeer in lowerLayer)
-              for (final upperPeer in upperLayer)
-                if (allowByDefault)
-                  Deny(sources: lowerPeer, targets: upperPeer, message: 'Layer violation')
-                else
-                  Allow(sources: upperPeer, targets: lowerPeer),
+              for (final upperPeer in layer) ...[
+                // Always deny upward imports.
+                if (allowByDefault) Deny(sources: lowerPeer, targets: upperPeer, message: 'Layer violation'),
+                // Downward: allow if transitive, or if adjacent (j == 0).
+                if (transitiveLayers || j == 0) ...[
+                  if (!allowByDefault) Allow(sources: upperPeer, targets: lowerPeer),
+                ] else ...[
+                  if (allowByDefault) Deny(sources: upperPeer, targets: lowerPeer, message: 'Layer violation'),
+                ],
+              ],
       ],
     ];
   }
