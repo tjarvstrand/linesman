@@ -1,6 +1,6 @@
 name: linesman
 description: Enforce boundaries between different parts of your codebase.
-version: 0.1.0+1
+version: 0.2.0
 homepage: https://github.com/tjarvstrand/linesman
 repository: https://github.com/tjarvstrand/linesman
 
