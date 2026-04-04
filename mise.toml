@@ -13,7 +13,7 @@ run = "dart test"
 
 [tasks.format-check]
 description = "Check formatting"
-run = "dart format --output=none --set-exit-if-changed $(git ls-files lib test)"
+run = "dart format --output=none --set-exit-if-changed ."
 
 [tasks.analyze]
 description = "Run static analysis"
@@ -29,6 +29,6 @@ description = "Analyze and check formatting"
 depends = ["analyze", "format-check"]
 
 [tasks.release]
-depends = ["analyze", "format"]
+depends = ["check"]
 description = "Release: update changelog, publish to pub.dev, push tag"
-run = "scripts/release.sh"
+run = "bin/release"

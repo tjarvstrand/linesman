@@ -18,6 +18,8 @@ class LinesmanRule extends AnalysisRule {
 
   static const LintCode code = LintCode('linesman', 'Disallowed import{0}');
 
+  Config? _config;
+
   @override
   DiagnosticCode get diagnosticCode => code;
 
@@ -28,7 +30,7 @@ class LinesmanRule extends AnalysisRule {
       return;
     }
 
-    final config = _loadConfig(packageRoot);
+    final config = _config ??= _loadConfig(packageRoot);
     final visitor = _Visitor(this, context, config);
     registry.addImportDirective(this, visitor);
   }

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Pub workspace support: linesman now walks up from the package root to find a workspace-level `linesman.yaml` and merges it with the package-level config. This allows defining cross-package rules and layers in a single place.
 
 ### Fixed
+ - Configuration is now parsed once and cached instead of being re-read from disk for every analyzed file.
  - Added test_project to .pubignore
  - Untracked pubspec.lock
 

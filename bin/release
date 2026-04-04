@@ -3,7 +3,7 @@
 set -e
 
 RELEASE_VERSION="${RELEASE_VERSION:-main}"
-RELEASE_URL="https://raw.githubusercontent.com/tjarvstrand/dart-release/$RELEASE_VERSION/release.sh"
+RELEASE_URL="https://raw.githubusercontent.com/tjarvstrand/dart-release.sh/$RELEASE_VERSION/release.sh"
 
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 cache_dir="${script_dir}/../.dart-release"
