@@ -143,6 +143,16 @@ With this setting, `ui` can import from `domain` but not from `data`.
 Using layers will trigger automatic generation of an initial rule set that is applied before explicit `rules`. This
 makes it easy to create overrides where exceptions are needed.
 
+### Pub Workspaces
+
+In a [pub workspace](https://dart.dev/tools/pub/pubspec#workspace), you can place a `linesman.yaml`
+at the workspace root to define rules that apply across all packages. Linesman detects the workspace
+root by walking up from the package root and looking for a `pubspec.yaml` with a `workspace` key.
+
+If both a workspace-level and a package-level `linesman.yaml` exist, they are merged: workspace
+rules are evaluated first, then package rules. This means package-level rules can override workspace
+rules. Groups are also merged, with package-level groups taking precedence on name collisions.
+
 ## Contributing
 
 PRs accepted.

@@ -301,5 +301,38 @@ void main() {
         });
       });
     });
+
+    group('merge', () {
+      test('other rules come after base rules', () {
+        final baseRule = Deny(sources: ['a'], targets: ['b']);
+        final otherRule = Allow(sources: ['a'], targets: ['b']);
+        const base = Config(rules: []);
+        final merged = Config(rules: [baseRule]).merge(Config(rules: [otherRule]));
+        expect(merged.rules, equals([baseRule, otherRule]));
+        // Other's allow overrides base's deny (later rules win)
+        expect(check(merged, 'p', 'p/a', 'p/b').allowed, isTrue);
+      });
+      test('other allowByDefault wins', () {
+        const base = Config(allowByDefault: true);
+        final merged = base.merge(const Config(allowByDefault: false));
+        expect(merged.allowByDefault, isFalse);
+      });
+      test('groups are combined with other taking precedence on collision', () {
+        final base = Config(groups: {
+          'shared': ['a'],
+          'base_only': ['b'],
+        });
+        final other = Config(groups: {
+          'shared': ['c'],
+          'other_only': ['d'],
+        });
+        final merged = base.merge(other);
+        expect(merged.groups, {
+          'shared': ['c'],
+          'base_only': ['b'],
+          'other_only': ['d'],
+        });
+      });
+    });
   });
 }

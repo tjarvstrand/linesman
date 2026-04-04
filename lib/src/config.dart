@@ -67,21 +67,31 @@ class Config {
   }
 
   static List<String> _expandPatterns(String value, Map<String, List<String>> groups) {
-    if (value.startsWith(r'$')) {
-      final groupName = value.substring(1);
-      final group = groups[groupName];
-      if (group == null) {
-        throw ArgumentError('Unknown group: $groupName');
-      }
-      return group;
+    if (!value.startsWith(r'$')) {
+      return [value];
     }
-    return [value];
+    final groupName = value.substring(1);
+    final group = groups[groupName];
+    return group ?? (throw ArgumentError('Unknown group: $groupName'));
   }
 
   final bool allowByDefault;
   final bool verbose;
   final Map<String, List<String>> groups;
   final List<Rule> rules;
+
+  /// Merges [other] on top of this config.
+  ///
+  /// Groups from both configs are combined (other's groups override on key
+  /// collision). Rules from this config come first, then other's rules
+  /// (so other's rules take precedence). Other's scalar settings
+  /// (allowByDefault, verbose) win.
+  Config merge(Config other) => Config(
+    allowByDefault: other.allowByDefault,
+    verbose: other.verbose,
+    groups: {...groups, ...other.groups},
+    rules: [...rules, ...other.rules],
+  );
 
   @override
   String toString() => 'Config(allowByDefault: $allowByDefault, rules: $rules)';
