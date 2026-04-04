@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-04-04
+
 ### Added
  - Pub workspace support: linesman now walks up from the package root to find a workspace-level `linesman.yaml` and merges it with the package-level config. This allows defining cross-package rules and layers in a single place.
 

@@ -5,7 +5,7 @@
 ```yaml
 # pubspec.yaml
 dev_dependencies:
-  linesman: ^0.1.0
+  linesman: ^0.3.0
 ```
 
 ## 2. Enable the plugin
@@ -13,7 +13,7 @@ dev_dependencies:
 ```yaml
 # analysis_options.yaml
 plugins:
-  linesman: ^0.1.0
+  linesman: ^0.3.0
 ```
 
 ## 3. Configure rules

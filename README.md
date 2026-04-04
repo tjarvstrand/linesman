@@ -19,7 +19,7 @@ Add linesman as a dev dependency:
 ```yaml
 # pubspec.yaml
 dev_dependencies:
-  linesman: ^0.1.0
+  linesman: ^0.3.0
 ```
 
 Enable the plugin in `analysis_options.yaml`:
@@ -27,7 +27,7 @@ Enable the plugin in `analysis_options.yaml`:
 ```yaml
 # analysis_options.yaml
 plugins:
-  linesman: ^0.1.0
+  linesman: ^0.3.0
 ```
 
 ## Configuration
