@@ -13,6 +13,7 @@ run = "dart test"
 
 [tasks.format-check]
 description = "Check formatting"
+depends = ["deps"]
 run = "dart format --output=none --set-exit-if-changed ."
 
 [tasks.analyze]
@@ -29,6 +30,6 @@ description = "Analyze and check formatting"
 depends = ["analyze", "format-check"]
 
 [tasks.release]
-depends = ["check"]
 description = "Release: update changelog, publish to pub.dev, push tag"
+depends = ["check"]
 run = "bin/release"
