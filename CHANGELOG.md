@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+ - Drop unused dependencies on collection and fast_immutable_collections
+
 ## [0.3.2] - 2026-04-09
+
+ - Support analyzer >=8.4.0 <13.0.0
 
 ## [0.3.1] - 2026-04-09
 
