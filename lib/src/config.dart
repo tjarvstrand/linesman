@@ -15,7 +15,12 @@ class Config {
     };
     final allowByDefault = json['allowByDefault'] as bool? ?? true;
     final allowTransitiveLayerAccess = json['allowTransitiveLayerAccess'] as bool? ?? false;
-    final layerRules = _parseLayerRules(json['layers'] as List? ?? [], groups, allowByDefault, allowTransitiveLayerAccess);
+    final layerRules = _parseLayerRules(
+      json['layers'] as List? ?? [],
+      groups,
+      allowByDefault,
+      allowTransitiveLayerAccess,
+    );
     final explicitRules =
         (json['rules'] as List<dynamic>?)?.map((e) => Rule.fromJson(e as Map, groups: groups)).toList() ?? [];
     return Config(
