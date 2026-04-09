@@ -127,18 +127,18 @@ layers:
   - [$http_client, $db, $messaging]
 ```
 
-By default, upper layers can import from any lower layer. Set `transitiveLayers: false` to restrict
-imports to only the immediately adjacent layer below:
+By default, imports are restricted to only the immediately adjacent layer below. Set
+`allowTransitiveLayerAccess: true` to allow upper layers to import from any lower layer:
 
 ```yaml
-transitiveLayers: false
+allowTransitiveLayerAccess: true
 layers:
   - $ui
   - $domain
   - $data
 ```
 
-With this setting, `ui` can import from `domain` but not from `data`.
+With this setting, `ui` can import from both `domain` and `data`.
 
 Using layers will trigger automatic generation of an initial rule set that is applied before explicit `rules`. This
 makes it easy to create overrides where exceptions are needed.

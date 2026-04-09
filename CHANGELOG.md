@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+ - Renamed `transitiveLayers` to `allowTransitiveLayerAccess`.
+ - Changed default for `allowTransitiveLayerAccess` from `true` to `false`.
+
 ## [0.3.0] - 2026-04-04
 
 ### Added

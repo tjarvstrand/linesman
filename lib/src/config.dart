@@ -14,8 +14,8 @@ class Config {
         },
     };
     final allowByDefault = json['allowByDefault'] as bool? ?? true;
-    final transitiveLayers = json['transitiveLayers'] as bool? ?? true;
-    final layerRules = _parseLayerRules(json['layers'] as List? ?? [], groups, allowByDefault, transitiveLayers);
+    final allowTransitiveLayerAccess = json['allowTransitiveLayerAccess'] as bool? ?? false;
+    final layerRules = _parseLayerRules(json['layers'] as List? ?? [], groups, allowByDefault, allowTransitiveLayerAccess);
     final explicitRules =
         (json['rules'] as List<dynamic>?)?.map((e) => Rule.fromJson(e as Map, groups: groups)).toList() ?? [];
     return Config(
@@ -30,7 +30,7 @@ class Config {
     List<dynamic> layers,
     Map<String, List<String>> groups,
     bool allowByDefault,
-    bool transitiveLayers,
+    bool allowTransitiveLayerAccess,
   ) {
     final parsedLayers = [
       for (final layer in layers)
@@ -56,7 +56,7 @@ class Config {
                 // Always deny upward imports.
                 if (allowByDefault) Deny(sources: lowerPeer, targets: upperPeer, message: 'Layer violation'),
                 // Downward: allow if transitive, or if adjacent (j == 0).
-                if (transitiveLayers || j == 0) ...[
+                if (allowTransitiveLayerAccess || j == 0) ...[
                   if (!allowByDefault) Allow(sources: upperPeer, targets: lowerPeer),
                 ] else ...[
                   if (allowByDefault) Deny(sources: upperPeer, targets: lowerPeer, message: 'Layer violation'),

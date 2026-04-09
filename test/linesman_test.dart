@@ -157,16 +157,16 @@ void main() {
     });
 
     group('layers', () {
-      test('allows downward imports', () {
+      test('allows adjacent downward imports', () {
         final config = Config.fromJson({
           'layers': ['lib/ui/**', 'lib/domain/**', 'lib/data/**'],
         });
-        // ui -> domain: allowed
+        // ui -> domain: allowed (adjacent)
         expect(check(config, 'p', 'p/lib/ui/page.dart', 'p/lib/domain/model.dart').allowed, isTrue);
-        // ui -> data: allowed
-        expect(check(config, 'p', 'p/lib/ui/page.dart', 'p/lib/data/repo.dart').allowed, isTrue);
-        // domain -> data: allowed
+        // domain -> data: allowed (adjacent)
         expect(check(config, 'p', 'p/lib/domain/model.dart', 'p/lib/data/repo.dart').allowed, isTrue);
+        // ui -> data: denied (non-adjacent)
+        expect(check(config, 'p', 'p/lib/ui/page.dart', 'p/lib/data/repo.dart').allowed, isFalse);
       });
       test('denies upward imports', () {
         final config = Config.fromJson({
@@ -241,17 +241,19 @@ void main() {
         // ui -> domain: allowed
         expect(check(config, 'p', 'p/lib/ui/page.dart', 'p/lib/domain/model.dart').allowed, isTrue);
       });
-      group('transitiveLayers', () {
-        test('defaults to true, allowing skipping layers', () {
+      group('allowTransitiveLayerAccess', () {
+        test('defaults to false, denying non-adjacent imports', () {
           final config = Config.fromJson({
             'layers': ['lib/ui/**', 'lib/domain/**', 'lib/data/**'],
           });
-          // ui -> data: allowed (skips domain)
-          expect(check(config, 'p', 'p/lib/ui/page.dart', 'p/lib/data/repo.dart').allowed, isTrue);
+          // ui -> data: denied (non-adjacent)
+          expect(check(config, 'p', 'p/lib/ui/page.dart', 'p/lib/data/repo.dart').allowed, isFalse);
+          // ui -> domain: allowed (adjacent)
+          expect(check(config, 'p', 'p/lib/ui/page.dart', 'p/lib/domain/model.dart').allowed, isTrue);
         });
         test('when false, denies non-adjacent downward imports', () {
           final config = Config.fromJson({
-            'transitiveLayers': false,
+            'allowTransitiveLayerAccess': false,
             'layers': ['lib/ui/**', 'lib/domain/**', 'lib/data/**'],
           });
           // ui -> domain: allowed (adjacent)
@@ -263,7 +265,7 @@ void main() {
         });
         test('when false, still denies upward imports', () {
           final config = Config.fromJson({
-            'transitiveLayers': false,
+            'allowTransitiveLayerAccess': false,
             'layers': ['lib/ui/**', 'lib/domain/**', 'lib/data/**'],
           });
           // data -> ui: denied
@@ -273,7 +275,7 @@ void main() {
         });
         test('when false, still denies peer imports', () {
           final config = Config.fromJson({
-            'transitiveLayers': false,
+            'allowTransitiveLayerAccess': false,
             'layers': [
               [r'$http', r'$db'],
               'lib/domain/**',
@@ -289,7 +291,7 @@ void main() {
         test('when false with allowByDefault false, only allows adjacent', () {
           final config = Config.fromJson({
             'allowByDefault': false,
-            'transitiveLayers': false,
+            'allowTransitiveLayerAccess': false,
             'layers': ['lib/ui/**', 'lib/domain/**', 'lib/data/**'],
           });
           // ui -> domain: allowed (adjacent)
